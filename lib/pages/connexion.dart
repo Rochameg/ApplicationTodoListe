@@ -15,15 +15,15 @@ class _ConnexionState extends State<Connexion> {
   bool _obscurePassword = true;
 
   // Controllers
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController nomController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   // Fonction de connexion
   Future<void> connecter() async {
-    String email = emailController.text.trim();
+    String nom = nomController.text.trim();
     String password = passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
+    if (nom.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Veuillez remplir tous les champs.")),
       );
@@ -35,16 +35,16 @@ class _ConnexionState extends State<Connexion> {
     // Récupérer tous les utilisateurs
     final utilisateurs = await db.getAllUsers();
 
-    // Vérifier si l'utilisateur existe
+    // Vérifier si l'utilisateur existe (connexion avec NOM)
     final utilisateurTrouve = utilisateurs.firstWhere(
-      (u) => u.email == email && u.password == password,
+      (u) => u.nom == nom && u.password == password,
       orElse: () => Utilisateur(id: -1, nom: "", email: "", password: ""),
     );
 
     if (utilisateurTrouve.id == -1) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Identifiants incorrects.")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Nom ou mot de passe incorrect.")),
+      );
       return;
     }
 
@@ -97,10 +97,10 @@ class _ConnexionState extends State<Connexion> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Email"),
+                const Text("Nom d'utilisateur"),
                 const SizedBox(height: 5),
                 TextField(
-                  controller: emailController,
+                  controller: nomController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: Colors.grey.shade300,
@@ -142,7 +142,6 @@ class _ConnexionState extends State<Connexion> {
 
                 const SizedBox(height: 25),
 
-                // BOUTON CONNEXION
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
